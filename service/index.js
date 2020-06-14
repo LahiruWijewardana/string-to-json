@@ -3,44 +3,67 @@ import Customlog from '../helpers/Customlog';
 
 const LOGGER = new Customlog(Path.basename(__filename));
 
-const converter = async () => {
+const variableStringCheck = async (variableString) => {
   try {
-    LOGGER.info('Inside converter');
-
-    let stringJson = ' { app_id: "MOB0006", serviceProvider: 5 } ';
-    LOGGER.info(stringJson);
-
-    stringJson = stringJson.trim();
-    LOGGER.info(stringJson);
-
-    let replcedString = stringJson.replace(/{/g, '');
-    replcedString = replcedString.replace(/}/g, '');
-    // replcedString = replcedString.replace(/"/g, '\'');
-    replcedString = replcedString.trim();
-    LOGGER.info(replcedString);
-
-    const splitArray = replcedString.split(',');
-    LOGGER.info(splitArray);
-
-    const splitArrayLength = splitArray.length;
-    const returnObject = {};
-
-    for (let stringCounter = 0; stringCounter < splitArrayLength; stringCounter += 1) {
-      let keyValuePair = splitArray[stringCounter];
-      keyValuePair = keyValuePair.trim();
-      LOGGER.info(keyValuePair);
-
-      const keyValuePairSplit = keyValuePair.split(':');
-
-      splitArray[stringCounter] = {
-        key: keyValuePairSplit[0].trim(),
-        value: keyValuePairSplit[1].trim()
-      };
-
-      returnObject[keyValuePairSplit[0].trim()] = keyValuePairSplit[1].trim();
+    if (!isNaN(variableString)) { // eslint-disable-line no-restricted-globals
+      return parseFloat(variableString);
     }
 
-    LOGGER.info(returnObject);
+    if (variableString[0] === '"') {
+      variableString = variableString.replace(/"/g, '');
+      return variableString.trim();
+    }
+
+    return variableString;
+  } catch (error) {
+    LOGGER.error(error);
+    throw new Error(error);
+  }
+};
+
+const prepareJsonString = async (jsonString) => {
+  try {
+    jsonString = jsonString.replace(/{/g, '');
+    jsonString = jsonString.replace(/}/g, '');
+
+    return jsonString.trim();
+  } catch (error) {
+    LOGGER.error(error);
+    throw new Error(error);
+  }
+};
+
+const splitKeyValuesAndCreateObject = async (keyValueString) => {
+  try {
+    const splitKeyValueArray = keyValueString.split(',');
+
+    const splitKeyValueArrayLength = splitKeyValueArray.length;
+    const returnObject = {};
+
+    for (let keyValuePairCounter = 0; keyValuePairCounter < splitKeyValueArrayLength; keyValuePairCounter += 1) {
+      const keyValuePair = splitKeyValueArray[keyValuePairCounter].trim();
+
+      const keyValueSplit = keyValuePair.split(':');
+
+      // eslint-disable-next-line no-await-in-loop
+      returnObject[keyValueSplit[0].trim()] = await variableStringCheck(keyValueSplit[1].trim());
+    }
+
+    return returnObject;
+  } catch (error) {
+    LOGGER.error(error);
+    throw new Error(error);
+  }
+};
+
+const converter = async () => {
+  try {
+    let jsonString = '{ app_id: "MOB0006", serviceProvider: 5, chargin_cycle: 70 }';
+    LOGGER.info(jsonString);
+
+    jsonString = await prepareJsonString(jsonString);
+    const jsonObject = await splitKeyValuesAndCreateObject(jsonString);
+    LOGGER.info(jsonObject);
   } catch (error) {
     LOGGER.error(error);
   }
