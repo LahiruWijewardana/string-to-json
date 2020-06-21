@@ -1,25 +1,8 @@
 import Path from 'path';
 import Customlog from '../helpers/Customlog';
+import ValueChecker from './valueChecker';
 
 const LOGGER = new Customlog(Path.basename(__filename));
-
-const variableStringCheck = async (variableString) => {
-  try {
-    if (!isNaN(variableString)) { // eslint-disable-line no-restricted-globals
-      return parseFloat(variableString);
-    }
-
-    if (variableString[0] === '"') {
-      variableString = variableString.replace(/"/g, '');
-      return variableString.trim();
-    }
-
-    return variableString;
-  } catch (error) {
-    LOGGER.error(error);
-    throw new Error(error);
-  }
-};
 
 const prepareJsonString = async (jsonString) => {
   try {
@@ -46,7 +29,7 @@ const splitKeyValuesAndCreateObject = async (keyValueString) => {
       const keyValueSplit = keyValuePair.split(':');
 
       // eslint-disable-next-line no-await-in-loop
-      returnObject[keyValueSplit[0].trim()] = await variableStringCheck(keyValueSplit[1].trim());
+      returnObject[keyValueSplit[0].trim()] = await ValueChecker.valueStringCheck(keyValueSplit[1].trim());
     }
 
     return returnObject;
