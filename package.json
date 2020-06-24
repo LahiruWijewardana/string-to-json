@@ -7,9 +7,15 @@
     "start": "nodemon ./lib/index.js",
     "test": "mocha test/index.test.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LahiruWijewardana/string-to-json.git"
+  },
   "keywords": [
     "npm",
-    "package"
+    "package",
+    "json",
+    "json string"
   ],
   "config": {
     "ghooks": {
