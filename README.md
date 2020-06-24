@@ -36,9 +36,6 @@ Object like below
 
     const resultJsonObject = await StringToJson.convertJson(jsonString);
 ```
-
-## Upcoming
-
-- Take input as JSON format in entire string like this:  '{"abc.def.g":123}' which passes JSON.parse();
-- Take input as http query like this: 'abc.def.g=123&abc.def.h=[1,2,3]&abc.def.i=xxxxx'
+## License
+MIT
 
